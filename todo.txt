@@ -12,3 +12,4 @@ What I need to do ahhhh
         -Or at least only display a certain amount
 -Time frame or pages of results specified for search
 -Add prediction packages to requirements.txt
+-Make mobile responsive
