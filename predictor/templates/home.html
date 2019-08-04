@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Home</title>
+{% endblock %}
+
+{% block body %}
+    <div id="header">
+        <h2 id="header_main">Howdy {{ user }} </h2>
+        <h3 id="logout"><a href="{% url 'logout' %}">Logout</a></h3>
+    </div>
+
+    <div id="sidebar">
+        <h4>Saved Searches</h4>
+        <ul id="saved">
+            {% for search in saved_search %}
+                <li>{{ search.term }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id= "search">
+        <form action="{% url 'search' %}" method="post">
+            {% csrf_token %}
+            <input name="search_term" type="text" placeholder="Search for parts"><br>
+            <select name="category">
+                {% for category in categories %}
+                    <option value="{{ category.categoryId }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Search"/>
+        </form>
+    </div>
+{% endblock %}

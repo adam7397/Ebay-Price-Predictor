@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Search</title>
+{% endblock %}
+
+{% block body %}
+    <p>{{ term }}</p>
+    <p>{{ category }}</p>
+    <!--Need to somehow take in the passed data and send it to the save funtion-->
+    <form action="{% url 'save' %}" method="post">
+        <input type="submit" value="Search"/>
+    </form>
+{% endblock%}

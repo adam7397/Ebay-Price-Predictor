@@ -1,0 +1,14 @@
+What I need to do ahhhh
+
+-Make css file so things do not look so ugly (for once)
+-Get model working in project somehow
+    -Should it be in another file? or views
+    -Can't be as slow as it currently is
+-Figure out how to pass a matlib plot or the raw data to create one
+-Implement a save button so that the searched item can be added to their database
+    -Maybe use js to append in real time
+-Have recent searches be displayed somewhere
+    -Only show a certain amount of them
+        -Or at least only display a certain amount
+-Time frame or pages of results specified for search
+-Add prediction packages to requirements.txt
