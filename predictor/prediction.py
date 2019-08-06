@@ -11,24 +11,23 @@ import os
 pd.plotting.register_matplotlib_converters() #This gets rid of an annoying warning
 
 def printPlot(df, keyword):
-    #So that the x axis does not look terrible
-    date_min = np.min(df['times'])
-    date_max = np.max(df['times'])
+	#So that the x axis does not look terrible
+	date_min = np.min(df['times'])
+	date_max = np.max(df['times'])
 
-    #plot the nice data
-    fig = plt.figure()
-    plt.scatter(df['times'].tolist(), df['prices'])
+	#plot the nice data
+	fig = plt.figure()
+	plt.scatter(df['times'].tolist(), df['prices'])
 
-    X_test,y_pred = linearReg(df)
-    #print(X_test)
-    plt.plot(X_test,y_pred, color='yellow', linewidth=3)
-    
-    plt.title('All Sold Prices: ' + keyword)
-    plt.xlabel('Date')
-    plt.ylabel('USD')
-    plt.xlim(date_min, date_max)
-    
-    return mpld3.fig_to_html(fig)
+	X_test,y_pred,prediction = linearReg(df)
+	#plt.plot(X_test,y_pred, color='yellow', linewidth=3)
+
+	plt.title('All Sold Prices: ' + keyword)
+	plt.xlabel('Date')
+	plt.ylabel('USD')
+	plt.xlim(date_min, date_max)
+
+	return mpld3.fig_to_html(fig), prediction
 
 def apiCall(keyword, pages, category):
 	pages = pages + 1 #for the range
@@ -87,39 +86,42 @@ def createAndFilterDF(prices, times):
 
 
 def linearReg(df):
-    X_train, X_test, y_train, y_test = train_test_split(df.epoch.values.reshape(-1,1), df.prices, test_size=0.2, random_state = 42)
+	X_train, X_test, y_train, y_test = train_test_split(df.epoch.values.reshape(-1,1), df.prices, test_size=0.2, random_state = 42)
 
-    regressionModel = LinearRegression()
+	regressionModel = LinearRegression()
 
-    regressionModel.fit(X_train, y_train)
+	regressionModel.fit(X_train, y_train)
 
-    print("Train accuracy is %.2f %%" % (regressionModel.score(X_train, y_train)*100))
-    print("Test accuracy is %.2f %%" % (regressionModel.score(X_test, y_test)*100))
+	print("Train accuracy is %.2f %%" % (regressionModel.score(X_train, y_train)*100))
+	print("Test accuracy is %.2f %%" % (regressionModel.score(X_test, y_test)*100))
 
-    curTime = np.array([datetime.now().timestamp() + 2592000])
+	curTime = np.array([datetime.now().timestamp() + 2592000])
 
-    curTime = curTime.reshape(1, -1)
+	curTime = curTime.reshape(1, -1)
 
-    print("price prediction 30 days from now:", regressionModel.predict(curTime))
+	prediction = regressionModel.predict(curTime)
 
-    #predict regression, plot it too
-    y_pred = regressionModel.predict(X_test)
-    #fig = plt.figure()
-    #plt.scatter(X_test,y_test, color='black')
-    #plt.plot(X_test,y_pred, color='blue',linewidth=3)
+	#print("price prediction 30 days from now:", regressionModel.predict(curTime))
 
-    #plt.title('Test Data & Linear Regression')
-    #plt.xlabel('Time in Epoch')
-    #plt.ylabel('USD')
-    #plt.show()
-    #return mpld3.fig_to_html(fig)
+	#predict regression, plot it too
+	y_pred = regressionModel.predict(X_test)
+	#fig = plt.figure()
+	#plt.scatter(X_test,y_test, color='black')
+	#plt.plot(X_test,y_pred, color='blue',linewidth=3)
 
-    return X_test,y_pred
+	#plt.title('Test Data & Linear Regression')
+	#plt.xlabel('Time in Epoch')
+	#plt.ylabel('USD')
+	#plt.show()
+	#return mpld3.fig_to_html(fig)
+
+	return X_test,y_pred, prediction
 
 def webcall(keyword, category):
-    time = 2
-    prices, times = apiCall(keyword, time, category)
-    filtered = createAndFilterDF(prices, times)
-    plot = printPlot(filtered, keyword)
-    #plot = linearReg(filtered) 
-    return plot
+	time = 2
+	prices, times = apiCall(keyword, time, category)
+	filtered = createAndFilterDF(prices, times)
+	plot, prediction = printPlot(filtered, keyword)
+	#plot = linearReg(filtered)
+	
+	return plot, round(prediction[0], 2)

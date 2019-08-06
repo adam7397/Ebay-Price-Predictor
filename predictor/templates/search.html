@@ -7,15 +7,23 @@
 {% block body %}
     <p>{{ term }}</p>
     <p>{{ category }}</p>
-
-    <div id="plot">
-        {{ webcall|safe }}
+    <div id="saved">
+        {% for saved in saved_search %}
+            <p>{{ saved.name }}</p>
+        {% endfor %}
     </div>
+    <div id="plot">
+        {{ plot|safe }}
+    </div>
+    <p>Prediction: {{ prediction }}</p>
 
     <!--Need to somehow take in the passed data and send it to the save funtion-->
-    <!--
-    <form action="{% url 'save' %}" method="post">
-        <input type="submit" value="Search"/>
-    </form>
-    -->
+    <div id="save">
+        <form action="{% url 'save' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="term" value="{{ term }}">
+            <input type="hidden" name="category" value="{{ category }}">
+            <input type="submit" value="Save Search"/>
+        </form>
+    </div>
 {% endblock%}

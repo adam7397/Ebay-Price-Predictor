@@ -44,19 +44,38 @@ def logout_view(request):
 
 def search(request):
     term = request.POST["search_term"]
-    category = request.POST["category"]
+    categorystring = request.POST["category"]
+
+    recent_search = recent(userid=request.user, term=term, category=category.objects.get(categoryId=categorystring))
+    recent_search.save()
+
+    plot, prediction = webcall(term, categorystring)
 
     context = {
         'term': term,
-        'category': category,
-        'webcall': webcall(term, category)
+        'category': categorystring,
+        'plot': plot,
+        'prediction': prediction
     }
     return render(request, "search.html", context)
 
 def save(request):
-    new_save = saved(userid = request.user.id, term = "NEED TERM", category = "NEED CATEGORY")
+    term = request.POST["term"]
+    categorystring = request.POST["category"]
 
-    return render(request, search.html, context)
+    new_save = saved(userid=request.user, term=term, category=category.objects.get(categoryId=categorystring))
+    new_save.save()
+
+    plot, prediction = webcall(term, categorystring)
+    
+    context = {
+        'term': term,
+        'category': categorystring,
+        'plot': plot,
+        'prediction': prediction
+    }
+
+    return render(request, "search.html", context)
 
 def get_context(request):
     # Return recent searches and other user data needed from the database

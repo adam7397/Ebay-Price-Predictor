@@ -11,3 +11,4 @@ What I need to do ahhhh
         -Or at least only display a certain amount
 -Time frame or pages of results specified for search
 -Make mobile responsive
+-clean "" and ", make the inputs and names of input fields consistent

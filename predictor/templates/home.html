@@ -22,7 +22,7 @@
     <div id= "search">
         <form action="{% url 'search' %}" method="post">
             {% csrf_token %}
-            <input name="search_term" type="text" placeholder="Search for parts"><br>
+            <input type="text" name="search_term" placeholder="Search for parts"><br>
             <select name="category">
                 {% for category in categories %}
                     <option value="{{ category.categoryId }}">{{ category.name }}</option>
