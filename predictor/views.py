@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 from .models import saved, recent, category
+from predictor.prediction import *
+
 # Create your views here.
 def index(request):
     if not request.user.is_authenticated:
@@ -23,8 +25,8 @@ def register(request):
     user.last_name = lastName
     user.save()
     
-    context = get_context(request)
-    return render(request, "home.html", context)
+    # context = get_context(request)
+    return render(request, "login.html", {'message': "Registered! Please log in"})
 
 def login_view(request):
     username = request.POST["username"]
@@ -32,7 +34,7 @@ def login_view(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return render(request, "home.html", get_context(request))
     else:
         return render(request, "login.html", {"message": "Invalid credentials."})
 
@@ -46,7 +48,8 @@ def search(request):
 
     context = {
         'term': term,
-        'category': category
+        'category': category,
+        'webcall': webcall(term, category)
     }
     return render(request, "search.html", context)
 
@@ -55,14 +58,14 @@ def save(request):
 
     return render(request, search.html, context)
 
-
 def get_context(request):
     # Return recent searches and other user data needed from the database
 
     context = {
         'user': request.user,
         'saved_search': saved.objects.all().filter(userid=request.user.id),
-        'categories': category.objects.all()
+        'categories': category.objects.all(),
+        'recent': recent.objects.all().filter(userid=request.user.id).order_by('-id')
     }
-
+    # maybe add [:5] after orderby
     return context

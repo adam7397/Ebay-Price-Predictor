@@ -1,2 +1,7 @@
 Django>=2.2.3
 ebaysdk
+matplotlib
+numpy
+pandas
+scikit-learn
+git+https://github.com/javadba/mpld3@display_fix

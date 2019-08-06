@@ -7,8 +7,15 @@
 {% block body %}
     <p>{{ term }}</p>
     <p>{{ category }}</p>
+
+    <div id="plot">
+        {{ webcall|safe }}
+    </div>
+
     <!--Need to somehow take in the passed data and send it to the save funtion-->
+    <!--
     <form action="{% url 'save' %}" method="post">
         <input type="submit" value="Search"/>
     </form>
+    -->
 {% endblock%}
