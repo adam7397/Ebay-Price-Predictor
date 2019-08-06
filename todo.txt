@@ -10,3 +10,4 @@ What I need to do ahhhh
     -Only show a certain amount of them
         -Or at least only display a certain amount
 -Time frame or pages of results specified for search
+-Make mobile responsive
