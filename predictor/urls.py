@@ -9,6 +9,8 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("search", views.search, name="search"),
     path("save", views.save, name="save"),
+    path("savedsearch/<int:search_id>", views.savedsearch, name="savedsearch"),
+    path("recentsearch/<int:search_id>", views.recentsearch, name="recentsearch")
 ]
 
 # /<str:query> Needed?

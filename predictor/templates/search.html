@@ -5,8 +5,12 @@
 {% endblock %}
 
 {% block body %}
-    <p>{{ term }}</p>
-    <p>{{ category }}</p>
+    <div id="header">
+        <h3><a href="{% url 'index' %}">Home</a></h3>
+        <h3 id="logout"><a href="{% url 'logout' %}">Logout</a></h3>
+    </div>
+    
+
     <div id="saved">
         {% for saved in saved_search %}
             <p>{{ saved.name }}</p>
@@ -15,7 +19,8 @@
     <div id="plot">
         {{ plot|safe }}
     </div>
-    <p>Prediction: {{ prediction }}</p>
+    <p>Recent average price: ${{ average }}</p>
+    <p>30 day prediction: ${{ prediction }}</p>
 
     <!--Need to somehow take in the passed data and send it to the save funtion-->
     <div id="save">

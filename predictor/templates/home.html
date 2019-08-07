@@ -14,9 +14,22 @@
         <h4>Saved Searches</h4>
         <ul id="saved">
             {% for search in saved_search %}
-                <li>{{ search.term }}</li>
+                <li>
+                    <a href="{% url 'savedsearch' search.id %}">{{ search.term }}</a>
+                </li>
             {% endfor %}
         </ul>
+
+        <h4>Recent Searches</h4>
+        <ul id="recent">
+                {% for search in recent %}
+                    <li>
+                        <a href="{% url 'recentsearch' search.id %}">{{ search.term }}</a>
+                    </li>
+                {% endfor %}
+        </ul>
+
+
     </div>
 
     <div id= "search">

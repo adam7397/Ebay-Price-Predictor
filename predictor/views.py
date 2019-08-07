@@ -45,46 +45,60 @@ def logout_view(request):
 def search(request):
     term = request.POST["search_term"]
     categorystring = request.POST["category"]
+    saverecent(request, term, categorystring)
 
-    recent_search = recent(userid=request.user, term=term, category=category.objects.get(categoryId=categorystring))
-    recent_search.save()
+    return render(request, "search.html", lookup(request, term, categorystring))
 
-    plot, prediction = webcall(term, categorystring)
+def savedsearch(request, search_id):
+    search = saved.objects.get(id=search_id)
+    saverecent(request, search.term, search.category.categoryId)
+
+    return render(request, "search.html", lookup(request, search.term, search.category.categoryId))
+
+# This method is identical to the saved search except for which table it queries
+def recentsearch(request, search_id):
+    search = recent.objects.get(id=search_id)
+    saverecent(request, search.term, search.category.categoryId)
+
+    return render(request, "search.html", lookup(request, search.term, search.category.categoryId))
+
+# Created this helper function since there are two ways to search
+def lookup(request, term, categorystring):
+    plot, prediction, mean = webcall(term, categorystring)
 
     context = {
         'term': term,
         'category': categorystring,
         'plot': plot,
-        'prediction': prediction
+        'prediction': prediction,
+        'average': mean
     }
-    return render(request, "search.html", context)
+
+    return context
+# Created this helper function to take it out of lookup and make it useful for the save function too
+# I call it cateogorystring to not conflict with the category table
+def saverecent(request, term, categorystring):
+    recent_search = recent(userid=request.user, term=term, category=category.objects.get(categoryId=categorystring))
+    recent_search.save()
 
 def save(request):
+    # The hidden fields save me from query the database again to get the searched terms & category
     term = request.POST["term"]
     categorystring = request.POST["category"]
 
     new_save = saved(userid=request.user, term=term, category=category.objects.get(categoryId=categorystring))
     new_save.save()
 
-    plot, prediction = webcall(term, categorystring)
-    
-    context = {
-        'term': term,
-        'category': categorystring,
-        'plot': plot,
-        'prediction': prediction
-    }
-
-    return render(request, "search.html", context)
+    return render(request, "search.html", lookup(request, term, categorystring))
 
 def get_context(request):
-    # Return recent searches and other user data needed from the database
-
+    # 10 return recent searches and other user data needed from the database
+    # .distinct() with a positional argument only works with PostgreSQL, otherwise I would elminate seeing duplicates
     context = {
         'user': request.user,
         'saved_search': saved.objects.all().filter(userid=request.user.id),
         'categories': category.objects.all(),
-        'recent': recent.objects.all().filter(userid=request.user.id).order_by('-id')
+        'recent': recent.objects.all().filter(userid=request.user.id).order_by('-id')[:10]
     }
-    # maybe add [:5] after orderby
+
     return context
