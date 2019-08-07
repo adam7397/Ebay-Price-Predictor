@@ -9,20 +9,13 @@
         <h3><a href="{% url 'index' %}">Home</a></h3>
         <h3 id="logout"><a href="{% url 'logout' %}">Logout</a></h3>
     </div>
-    
 
-    <div id="saved">
-        {% for saved in saved_search %}
-            <p>{{ saved.name }}</p>
-        {% endfor %}
-    </div>
     <div id="plot">
         {{ plot|safe }}
     </div>
     <p>Recent average price: ${{ average }}</p>
     <p>30 day prediction: ${{ prediction }}</p>
 
-    <!--Need to somehow take in the passed data and send it to the save funtion-->
     <div id="save">
         <form action="{% url 'save' %}" method="post">
             {% csrf_token %}
