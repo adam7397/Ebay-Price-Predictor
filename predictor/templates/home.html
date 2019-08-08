@@ -5,12 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    <div id="header">
-        <h2 id="header_main">Howdy {{ user }} </h2>
-        <h3 id="logout"><a href="{% url 'logout' %}">Logout</a></h3>
-    </div>
-
+  
     <div id="sidebar">
+        <h2 id="header_main">Howdy, {{ user }} </h2>
+        <h4 id="logout"><a href="{% url 'logout' %}">Logout</a></h4>
         <h4>Saved Searches</h4>
         <ul id="saved">
             {% for search in saved_search %}
@@ -33,13 +31,13 @@
     <div id= "search">
         <form action="{% url 'search' %}" method="post">
             {% csrf_token %}
-            <input type="text" name="search_term" placeholder="Search for parts"><br>
+            <input id="search_term" type="text" name="search_term" placeholder="Search for parts"><br>
             <select name="category">
                 {% for category in categories %}
                     <option value="{{ category.categoryId }}">{{ category.name }}</option>
                 {% endfor %}
             </select>
-            <input type="submit" value="Search"/>
+            <input id="search_button" type="submit" value="Search"/>
         </form>
     </div>
 {% endblock %}

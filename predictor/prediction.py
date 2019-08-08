@@ -20,8 +20,7 @@ def printPlot(df, keyword):
 	fig = plt.figure()
 	plt.scatter(df['times'].tolist(), df['prices'])
 
-	X_test,y_pred,prediction = linearReg(df)
-	#plt.plot(X_test,y_pred, color='yellow', linewidth=3)
+	prediction = linearReg(df)
 
 	plt.title('Recent Sold Prices: ' + keyword)
 	plt.xlabel('Date')
@@ -84,34 +83,23 @@ def linearReg(df):
 
 	regressionModel.fit(X_train, y_train)
 
+	# Just for internal use, accuracy is usually not very high
 	print("Train accuracy is %.2f %%" % (regressionModel.score(X_train, y_train)*100))
 	print("Test accuracy is %.2f %%" % (regressionModel.score(X_test, y_test)*100))
 
     # Epoch time 30 days from now
-	curTime = np.array([datetime.now().timestamp() + 2592000])
+	curTime = np.array([datetime.now().timestamp() + 2592000]).reshape(1, -1)
 
-	curTime = curTime.reshape(1, -1)
-
+	# Predict regression & future price
+	y_pred = regressionModel.predict(X_test)
 	prediction = regressionModel.predict(curTime)
 
-	# Predict regression
-	y_pred = regressionModel.predict(X_test)
-	#fig = plt.figure()
-	#plt.scatter(X_test,y_test, color='black')
-	#plt.plot(X_test,y_pred, color='blue',linewidth=3)
-
-	#plt.title('Test Data & Linear Regression')
-	#plt.xlabel('Time in Epoch')
-	#plt.ylabel('USD')
-	#plt.show()
-	#return mpld3.fig_to_html(fig)
-
-	return X_test,y_pred, prediction
+	return prediction
 
 def webcall(keyword, category):
     # Time controls how many pages of results are gathered
     # More pages, better prediction & price data. But at the cost of time
-	time = 5
+	time = 3
 	prices, times = apiCall(keyword, time, category)
 	filtered = createAndFilterDF(prices, times)
 	plot, prediction = printPlot(filtered, keyword)
