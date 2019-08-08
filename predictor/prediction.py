@@ -1,3 +1,4 @@
+#from ebaysdk.parallel import Parallel
 import matplotlib.pyplot as plt, mpld3
 import pandas as pd
 import numpy as np
@@ -30,32 +31,74 @@ def printPlot(df, keyword):
 	return mpld3.fig_to_html(fig), prediction
 
 def apiCall(keyword, pages, category):
-    # For the range
-    pages = pages + 1
+	# For the range
+	pages = pages + 1
 
-    # Initialize the two lists used to store the data
-    prices = []
-    times = []
+	# Initialize the two lists used to store the data
+	prices = []
+	times = []
+	result = []
 
-    # I acknowledge that this is incredibly slow to get data but ebay will only allow 100 items to be returned per page so I have to call multiple pages
-    for x in range(1, pages):
-        try:
-            api = Finding(appid=str(os.environ['api_key']), config_file=None)
-            response = api.execute('findCompletedItems', {'keywords': keyword, 'categoryId': category, 'paginationInput': {'pageNumber': x}})
-            result = response.dict()['searchResult']
-        except ConnectionError as e:
-            print(e)
-            print(e.response.dict())
 
-        # Cast the series or whatever to a list
-        resultlist = result['item'] 
-        for x in resultlist:
-            # Add to relevant fields to their respective lists
-            prices.append(float(x['sellingStatus']['currentPrice']['value']))
-            # Convert the string to datetime object
-            times.append(datetime.strptime(x['listingInfo']['endTime'], "%Y-%m-%dT%H:%M:%S.%fZ"))
-            
-    return prices, times
+	# I acknowledge that this is incredibly slow to get data but ebay will only allow 100 items to be returned per page so I have to call multiple pages
+	for x in range(1, pages):
+		try:
+			api = Finding(appid=str(os.environ['api_key']), config_file=None)
+			response = api.execute('findCompletedItems', {'keywords': keyword, 'categoryId': category, 'paginationInput': {'pageNumber': x}})
+			result = response.dict()['searchResult']['item'] 
+		except ConnectionError as e:
+			print(e)
+			print(e.response.dict())
+
+		for x in result:
+			# Add to relevant fields to their respective lists
+			prices.append(float(x['sellingStatus']['currentPrice']['value']))
+			# Convert the string to datetime object
+			times.append(datetime.strptime(x['listingInfo']['endTime'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+			
+	return prices, times
+
+# Parallel version if you want to have some fun
+"""
+	try:
+		p = Parallel()
+		api1 = Finding(appid=str(os.environ['api_key']), config_file=None, parallel=p)
+		api1.execute('findCompletedItems', {'keywords': keyword, 'categoryId': category, 'paginationInput': {'pageNumber': 1}})
+
+		api2 = Finding(appid=str(os.environ['api_key']), config_file=None, parallel=p)
+		api2.execute('findCompletedItems', {'keywords': keyword, 'categoryId': category, 'paginationInput': {'pageNumber': 2}})        
+
+		api3 = Finding(appid=str(os.environ['api_key']), config_file=None, parallel=p)
+		api3.execute('findCompletedItems', {'keywords': keyword, 'categoryId': category, 'paginationInput': {'pageNumber': 3}})        
+
+		api4 = Finding(appid=str(os.environ['api_key']), config_file=None, parallel=p)
+		api4.execute('findCompletedItems', {'keywords': keyword, 'categoryId': category, 'paginationInput': {'pageNumber': 4}})
+
+		api5 = Finding(appid=str(os.environ['api_key']), config_file=None, parallel=p)
+		api5.execute('findCompletedItems', {'keywords': keyword, 'categoryId': category, 'paginationInput': {'pageNumber': 5}})
+
+		p.wait()
+
+		if p.error():
+			raise Exception(p.error())
+		
+		result.extend(api1.response.dict()['searchResult']['item'])
+		result.extend(api2.response.dict()['searchResult']['item'])
+		result.extend(api3.response.dict()['searchResult']['item'])
+		result.extend(api4.response.dict()['searchResult']['item'])
+		result.extend(api5.response.dict()['searchResult']['item'])
+
+		for x in result:
+			# Add to relevant fields to their respective lists
+			prices.append(float(x['sellingStatus']['currentPrice']['value']))
+			# Convert the string to datetime object
+			times.append(datetime.strptime(x['listingInfo']['endTime'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+			
+	except ConnectionError as e:
+		raise e
+
+	return prices, times
+"""
 
 def createAndFilterDF(prices, times):
 	# Helper variables

@@ -1,5 +1,0 @@
-What I need to do ahhhh
-
--Make css file so things do not look so ugly (for once)
--Make mobile responsive
--clean "" and ", make the inputs and names of input fields consistent

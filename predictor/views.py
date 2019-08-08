@@ -36,11 +36,11 @@ def login_view(request):
         login(request, user)
         return render(request, "home.html", get_context(request))
     else:
-        return render(request, "login.html", {"message": "Invalid credentials."})
+        return render(request, "login.html", {'message': "Invalid credentials."})
 
 def logout_view(request):
     logout(request)
-    return render(request, "login.html", {"message": "Logged out."})
+    return render(request, "login.html", {'message': "Logged out."})
 
 def search(request):
     term = request.POST["search_term"]
@@ -75,6 +75,7 @@ def lookup(request, term, categorystring):
     }
 
     return context
+
 # Created this helper function to take it out of lookup and make it useful for the save function too
 # I call it cateogorystring to not conflict with the category table
 def saverecent(request, term, categorystring):
