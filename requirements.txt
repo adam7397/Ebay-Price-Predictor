@@ -6,3 +6,4 @@ pandas
 scikit-learn
 git+https://github.com/javadba/mpld3@display_fix
 grequests
+jinja2
