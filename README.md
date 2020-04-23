@@ -1,4 +1,4 @@
-# final-project
+# eBay Price Predictor
 
 This project was so much fun, I had built this not so great prediction model a few months ago and this made it far more usable and I got to work some new tools with it.
 
